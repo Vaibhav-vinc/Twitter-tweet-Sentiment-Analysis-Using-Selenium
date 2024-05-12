@@ -1,0 +1,85 @@
+{% extends 'index.html' %}
+{% block content %}
+<form class="space-y-4" method="post" id="tweet_form" action="{% url 'analyze' %}">
+    {% csrf_token %}
+    <!-- <div>
+        <label for="twitter_username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Twitter Username
+        </label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="h-5 w-5 text-gray-400">
+                    <path
+                        d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z">
+                    </path>
+                </svg>
+            </div>
+            <input id="twitter_username"
+                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+                placeholder="Enter a Twitter username" required type="text" name="twitter_username" />
+        </div>
+    </div> -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="tweet-url">
+            Tweet URL
+        </label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="h-5 w-5 text-gray-400">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+            </div>
+            <input
+                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+                id="tweet-url" placeholder="Enter a Tweet URL" type="text" name="tweet-url" />
+        </div>
+        <div id="errorText" class="text-red-500 hidden">Please enter a valid Twitter URL!</div>
+
+    </div>
+    <button
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-primary/90 h-10 px-4 py-2 w-full"
+        type="submit">
+        Analyze Sentiment
+    </button>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+    function isValidTwitterUrl(url) {
+        console.log("url", url);
+        const urlRegex = /^https:\/\/twitter\.com\/[a-zA-Z0-9_]+\/status\/\d+$/;
+        regexResult = urlRegex.test(url) 
+        console.log("regexResult", regexResult);
+        
+        return regexResult;
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        const urlInput = document.getElementById('tweet-url');
+        const errorText = document.getElementById('errorText');
+        const initialClasses = ["border", "border-gray-300", "focus:ring-indigo-500", "focus:border-indigo-500", "dark:border-gray-700"]
+        const errorClassses = ["border-2", "border-red-500", "focus:ring-white", "focus:border-red-500", "dark:border-red-700"]
+
+        if (isValidTwitterUrl(urlInput.value)) {
+            urlInput.classList.remove(...errorClassses);
+            urlInput.classList.add(...initialClasses);
+            errorText.classList.add("hidden");
+            console.log("Submitting form...");
+            document.getElementById('tweet_form').submit()
+        } else {
+            console.log("invalid url");
+            urlInput.classList.remove(...initialClasses);
+            urlInput.classList.add(...errorClassses);
+            errorText.classList.remove("hidden");
+        }
+    }
+    document.getElementById('tweet_form').addEventListener('submit', handleSubmit);
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'index.html' %}
+{% block content %}
+<div id="result">
+    <div class="relative bg-white dark:bg-gray-800 rounded-md shadow-md p-6 space-y-4">
+        <div class="mb-4">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">Tweet Text</h2>
+            <div id="username-section" class="absolute right-6 top-2 font-bold">
+
+                <h2 id="twitter_username" 
+                class="w-auto text-lg text-gray-600 dark:text-gray-400">
+                {% if twitter_username %} {{twitter_username}}{% endif %}</h2>
+                <h2 id="twitter_handle"
+                class="w-auto text-xs text-gray-700 dark:text-gray-400">
+                {% if twitter_handle %} @{{twitter_handle}}{% endif %}</h2>
+            </div>
+        </div>
+        <span class="loader"></span>
+        <div id="tweet_text_div" class="hidden">
+            <p id="tweet_text" class="text-gray-600 dark:text-gray-400 w-auto"></p>
+        </div>
+    </div>
+    <div id="sentiment_result" class="bg-white dark:bg-gray-800 rounded-md shadow-md p-6 space-y-4 mt-4 hidden">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">Sentiment Analysis Results</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-gray-600 dark:text-gray-400">Polarity</p>
+                <p id="polarity" class="text-2xl font-bold text-gray-900 dark:text-gray-100"></p>
+            </div>
+            <div>
+                <p class="text-gray-600 dark:text-gray-400">Sentiment</p>
+                <p id="sentiment_type" class="text-2xl font-bold text-green-500 dark:text-green-400">Positive</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+            <div>
+                <p class="text-gray-600 dark:text-gray-400">Positive</p>
+                <p id="positive_pcnt" class="text-2xl font-bold text-green-500 dark:text-green-400">75%</p>
+            </div>
+            <div>
+                <p class="text-gray-600 dark:text-gray-400">Neutral</p>
+                <p id="neutral_pcnt" class="text-2xl font-bold text-gray-500 dark:text-gray-400">20%</p>
+            </div>
+            <div>
+                <p class="text-gray-600 dark:text-gray-400">Negative</p>
+                <p id="negative_pcnt" class="text-2xl font-bold text-red-500 dark:text-red-400">5%</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    window.addEventListener('load', () => {
+        fetch(location.origin + '/gs?tw_url={{tw_url}}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    console.log(data)
+                    // Add the.hidden class to the .loader element
+                    document.querySelector('.loader').classList.add('hidden');
+                    document.querySelector('#tweet_text_div').classList.remove('hidden');
+                    document.querySelector('#twitter_username').textContent = data.twitter_username;
+                    document.querySelector('#twitter_handle').textContent = data.twitter_handle;
+                    document.querySelector('#sentiment_result').classList.remove('hidden');
+                    document.querySelector('#tweet_text').textContent = data.tweet_text;
+                    document.querySelector('#polarity').textContent = data.polarity;
+                    document.querySelector('#sentiment_type').textContent = data.sentiment_type;
+                    document.querySelector('#positive_pcnt').textContent = data.positive_pcnt + "%";
+                    document.querySelector('#neutral_pcnt').textContent = data.neutral_pcnt + "%";
+                    document.querySelector('#negative_pcnt').textContent = data.negative_pcnt + "%";
+                }
+                else if (data.code === 404) {
+                    document.querySelector('.loader').classList.add('hidden');
+                    document.querySelector('#tweet_text_div').classList.remove('hidden');
+                    document.querySelector('#tweet_text').textContent = "Could not find the requested tweet!";
+
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+</script>
+{% endblock %}

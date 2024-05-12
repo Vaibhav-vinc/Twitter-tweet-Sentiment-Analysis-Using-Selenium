@@ -1,0 +1,4 @@
+django
+textblob
+selenium
+# pandas
