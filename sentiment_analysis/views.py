@@ -82,7 +82,7 @@ def processTweet(tweet_text) -> dict[str, float]:
     new_dict: dict[str, float] = dict()
     new_dict["sentiment_type"] = sentiment_type
     new_dict["polarity"] = TextBlob(text=tweet_text).polarity
-    new_dict["positive_pcnt"] = round(round(process_dict["pos"], 4), 2)
+    new_dict["positive_pcnt"] = round(process_dict["pos"] * 100, 2)
     new_dict["neutral_pcnt"] = round(process_dict["neu"] * 100, 2)
     new_dict["negative_pcnt"] = round(process_dict["neg"] * 100, 2)
     new_dict["tweet_text"] = tweet_text
